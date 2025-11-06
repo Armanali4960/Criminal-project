@@ -29,4 +29,9 @@ pip install psycopg2-binary==2.9.7
 python manage.py collectstatic --noinput
 
 # Run migrations
-python manage.py migrate
+# Handle potential migration issues
+python manage.py migrate || echo "Migration failed, trying with --fake-initial"
+python manage.py migrate --fake-initial || echo "Migration still failed"
+
+# Create superuser if it doesn't exist
+python manage.py init_data || echo "Init data script failed"

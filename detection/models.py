@@ -32,7 +32,7 @@ class DetectionResult(models.Model):
     report = models.ForeignKey(DetectionReport, on_delete=models.CASCADE, related_name='results')
     criminal = models.ForeignKey(Criminal, on_delete=models.CASCADE)
     confidence = models.FloatField()
-    face_coordinates = models.JSONField()  # Store face bounding box coordinates
+    face_coordinates = models.TextField()  # Store face bounding box coordinates as JSON string
     detected_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):

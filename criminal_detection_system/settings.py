@@ -65,6 +65,11 @@ if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL)
     }
+    # Ensure PostgreSQL-specific settings
+    if 'postgres' in DATABASE_URL:
+        DATABASES['default']['OPTIONS'] = {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
 else:
     DATABASES = {
         'default': {
@@ -74,8 +79,11 @@ else:
     }
 
 # Ensure the database is ready for use
+# Only set MySQL-specific options if using MySQL
 try:
-    DATABASES['default']['OPTIONS'] = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+    db_engine = DATABASES.get('default', {}).get('ENGINE', '')
+    if 'mysql' in db_engine:
+        DATABASES['default']['OPTIONS'] = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
 except:
     pass
 

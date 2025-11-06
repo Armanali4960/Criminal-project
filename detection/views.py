@@ -134,7 +134,7 @@ def upload_image(request):
                         report=report,
                         criminal_id=result['criminal_id'],
                         confidence=result['confidence'],
-                        face_coordinates=result['face_coordinates']
+                        face_coordinates=json.dumps(result['face_coordinates'])
                     )
                     detection_result.save()
             
@@ -340,7 +340,7 @@ def get_report_details(request, report_id):
             detections.append({
                 'criminal_name': result.criminal.name,
                 'confidence': float(result.confidence),
-                'face_coordinates': result.face_coordinates
+                'face_coordinates': json.loads(result.face_coordinates)
             })
         
         return JsonResponse({
