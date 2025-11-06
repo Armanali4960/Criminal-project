@@ -453,7 +453,8 @@ function displayResults(data) {
     
     if (!resultsContent) return;
     
-    if (data.detections && data.detections.length > 0) {
+    // Only show detailed results if criminals are found
+    if (data.total_criminals_found > 0 && data.detections && data.detections.length > 0) {
         // Criminals detected
         let html = `
             <div class="alert alert-success alert-criminal">
@@ -462,32 +463,35 @@ function displayResults(data) {
                         <i class="fas fa-check-circle fa-2x"></i>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <h5>Criminals Detected!</h5>
-                        <p>${data.detections.length} criminal(s) identified in the image.</p>
+                        <h5>Criminal Detected!</h5>
+                        <p>A match has been found in our criminal database.</p>
                     </div>
                 </div>
         `;
         
-        // Add detection details
+        // Add detection details only for criminal matches
         data.detections.forEach(detection => {
-            html += `
-                <div class="detection-result positive mt-3">
-                    <div class="row">
-                        <div class="col-md-3 text-center">
-                            <div class="bg-light rounded p-3 mb-3">
-                                <i class="fas fa-user-shield fa-3x text-danger"></i>
+            // Only show details for actual criminal matches
+            if (detection.is_criminal) {
+                html += `
+                    <div class="detection-result positive mt-3">
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <div class="bg-light rounded p-3 mb-3">
+                                    <i class="fas fa-user-shield fa-3x text-danger"></i>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-9">
-                            <h5>${detection.criminal_name}</h5>
-                            <p class="mb-2"><strong>Confidence Level:</strong> ${(detection.confidence * 100).toFixed(1)}%</p>
-                            <div class="progress mb-3">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: ${(detection.confidence * 100)}%"></div>
+                            <div class="col-md-9">
+                                <h5>${detection.criminal_name}</h5>
+                                <p class="mb-2"><strong>Confidence Level:</strong> ${detection.confidence}%</p>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: ${detection.confidence}%"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
         });
         
         html += `
@@ -499,7 +503,7 @@ function displayResults(data) {
         
         resultsContent.innerHTML = html;
     } else {
-        // No criminals detected
+        // No criminals detected - show minimal message or hide completely
         resultsContent.innerHTML = `
             <div class="alert alert-info">
                 <div class="d-flex">
@@ -507,9 +511,8 @@ function displayResults(data) {
                         <i class="fas fa-info-circle fa-2x"></i>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <h5>No Criminals Detected</h5>
+                        <h5>No Match Found</h5>
                         <p>No matches found in our criminal database.</p>
-                        <p><strong>Report ID:</strong> ${data.report_id}</p>
                     </div>
                 </div>
             </div>

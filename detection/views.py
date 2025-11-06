@@ -146,15 +146,28 @@ def upload_image(request):
             total_faces = len(detection_results)
             criminals_found = [result for result in detection_results if result.get('is_criminal', False)]
             
-            return JsonResponse({
-                'success': True,
-                'report_id': str(report.id),
-                'message': 'Image processed successfully',
-                'detections': detection_results,
-                'total_faces_detected': total_faces,
-                'total_criminals_found': len(criminals_found),
-                'criminals_list': [{'name': c['criminal_name'], 'confidence': c['confidence']} for c in criminals_found]
-            })
+            # Only return detailed results if criminals are found
+            if len(criminals_found) > 0:
+                return JsonResponse({
+                    'success': True,
+                    'report_id': str(report.id),
+                    'message': 'Criminal detected!',
+                    'detections': detection_results,
+                    'total_faces_detected': total_faces,
+                    'total_criminals_found': len(criminals_found),
+                    'criminals_list': [{'name': c['criminal_name'], 'confidence': c['confidence']} for c in criminals_found]
+                })
+            else:
+                # No criminals found, return minimal response
+                return JsonResponse({
+                    'success': True,
+                    'report_id': str(report.id),
+                    'message': 'No criminals detected',
+                    'detections': [],
+                    'total_faces_detected': total_faces,
+                    'total_criminals_found': 0,
+                    'criminals_list': []
+                })
             
         except Exception as e:
             return JsonResponse({
@@ -275,7 +288,7 @@ def process_image_for_detection(report):
                                 confidence = max_val * 100
                                 
                                 # If this is a better match and above threshold
-                                if confidence > best_confidence and confidence > 25:  # Adjusted threshold for better accuracy
+                                if confidence > best_confidence and confidence > 15:  # Lowered threshold for better accuracy
                                     best_confidence = confidence
                                     best_match = criminal
                 except Exception as e:
@@ -293,7 +306,7 @@ def process_image_for_detection(report):
             }
             
             # If we found a match
-            if best_match and best_confidence > 25:  # Adjusted threshold for better accuracy
+            if best_match and best_confidence > 15:  # Lowered threshold for better accuracy
                 face_result.update({
                     'criminal_id': str(best_match.id),
                     'criminal_name': best_match.name,

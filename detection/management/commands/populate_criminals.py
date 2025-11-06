@@ -73,26 +73,37 @@ class Command(BaseCommand):
     def add_sample_photo(self, criminal):
         """Add a sample photo for the criminal"""
         try:
-            # Create a simple sample image
-            img = np.ones((200, 200, 3), dtype=np.uint8) * 255  # White background
+            # Create a better quality sample image with a realistic face
+            img = np.ones((300, 300, 3), dtype=np.uint8) * 255  # White background
             
-            # Add some basic shapes to make it look like a face
-            # Face outline
-            cv2.circle(img, (100, 100), 80, (0, 0, 0), 2)
+            # Draw a more realistic face pattern
+            # Face outline (ellipse)
+            cv2.ellipse(img, (150, 150), (100, 120), 0, 0, 360, (0, 0, 0), 2)
             
             # Eyes
-            cv2.circle(img, (70, 80), 15, (0, 0, 0), -1)
-            cv2.circle(img, (130, 80), 15, (0, 0, 0), -1)
+            cv2.ellipse(img, (120, 130), (20, 25), 0, 0, 360, (0, 0, 0), -1)
+            cv2.ellipse(img, (180, 130), (20, 25), 0, 0, 360, (0, 0, 0), -1)
+            cv2.circle(img, (120, 130), 8, (255, 255, 255), -1)
+            cv2.circle(img, (180, 130), 8, (255, 255, 255), -1)
+            
+            # Eyebrows
+            cv2.ellipse(img, (120, 110), (25, 10), 0, 0, 180, (0, 0, 0), 3)
+            cv2.ellipse(img, (180, 110), (25, 10), 0, 0, 180, (0, 0, 0), 3)
             
             # Nose
-            cv2.circle(img, (100, 110), 10, (0, 0, 0), -1)
+            cv2.ellipse(img, (150, 150), (15, 20), 0, 0, 360, (0, 0, 0), -1)
             
             # Mouth
-            cv2.ellipse(img, (100, 140), (30, 15), 0, 0, 180, (0, 0, 0), 2)
+            cv2.ellipse(img, (150, 190), (30, 15), 0, 0, 180, (0, 0, 0), 2)
+            
+            # Add some facial features to make it look more realistic
+            # Cheeks
+            cv2.circle(img, (100, 160), 15, (200, 200, 200), -1)
+            cv2.circle(img, (200, 160), 15, (200, 200, 200), -1)
             
             # Add text with criminal's name
             first_name = criminal.name.split()[0]
-            cv2.putText(img, first_name, (10, 30), 
+            cv2.putText(img, first_name, (20, 40), 
                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
             
             # Save the image
@@ -102,28 +113,12 @@ class Command(BaseCommand):
             # Create directory if it doesn't exist
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             
-            # Save image
-            cv2.imwrite(filepath, img)
+            # Save image with higher quality
+            cv2.imwrite(filepath, img, [cv2.IMWRITE_JPEG_QUALITY, 95])
             
             # Update criminal with photo
             criminal.photo = f'criminal_photos/{filename}'
             criminal.save()
             
         except Exception as e:
-            # Fallback: create a very simple image
-            try:
-                # Create directory if it doesn't exist
-                filepath = os.path.join(settings.MEDIA_ROOT, 'criminal_photos', f"{criminal.name.replace(' ', '_').lower()}_fallback.jpg")
-                os.makedirs(os.path.dirname(filepath), exist_ok=True)
-                
-                # Create a simple white image with text
-                img = np.ones((150, 150, 3), dtype=np.uint8) * 255
-                cv2.putText(img, 'CRIMINAL', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
-                cv2.putText(img, criminal.name.split()[0], (10, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
-                cv2.imwrite(filepath, img)
-                
-                # Update criminal with photo
-                criminal.photo = f'criminal_photos/{criminal.name.replace(" ", "_").lower()}_fallback.jpg'
-                criminal.save()
-            except Exception as e2:
-                self.stdout.write(f'Could not add photo for {criminal.name}: {e2}')
+            self.stdout.write(f'Could not add photo for {criminal.name}: {e}')
