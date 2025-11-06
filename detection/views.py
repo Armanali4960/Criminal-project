@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.conf import settings
 from .models import Criminal, DetectionReport, DetectionResult
 
@@ -375,11 +376,13 @@ def citizen_login(request):
             messages.error(request, 'Invalid username or password')
     return render(request, 'detection/login.html')
 
+@require_POST
 def citizen_logout(request):
     """Handle citizen logout"""
     logout(request)
     return redirect('citizen_dashboard')
 
+@require_POST
 def police_logout(request):
     """Handle police logout"""
     logout(request)

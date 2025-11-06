@@ -69,9 +69,12 @@
                             <i class="fas fa-{% if user.is_staff %}user-shield{% else %}user{% endif %}"></i> 
                             {% if user.is_staff %}Police Officer{% else %}Citizen{% endif %}
                         </span>
-                        <a href="{% if user.is_staff %}{% url 'police_logout' %}{% else %}{% url 'citizen_logout' %}{% endif %}" class="btn btn-outline-light ms-2">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
+                        <form method="post" action="{% if user.is_staff %}{% url 'police_logout' %}{% else %}{% url 'citizen_logout' %}{% endif %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-light ms-2">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
                         {% if user.is_staff %}
                             <a href="{% url 'citizen_dashboard' %}" class="btn btn-sm btn-light ms-2">
                                 <i class="fas fa-user"></i> Citizen Portal
