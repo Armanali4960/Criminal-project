@@ -33,7 +33,7 @@ COPY . /app/
 RUN python manage.py collectstatic --noinput
 
 # Run migrations
-RUN python manage.py migrate
+RUN python manage.py migrate --noinput
 
 # Expose port
 EXPOSE $PORT
