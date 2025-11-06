@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: criminal-detection-system
+    name: criminalproject
     env: docker
     dockerfilePath: ./Dockerfile
     startCommand: ""
@@ -11,9 +11,5 @@ services:
         sync: false
       - key: WEB_CONCURRENCY
         value: 4
-
-  - type: redis
-    name: redis
-    ipAllowList: []
-    plan: free
-    maxmemoryPolicy: noeviction
+      - key: PORT
+        value: 8000
