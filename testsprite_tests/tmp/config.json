@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:8000",
+  "backendAuthType": "Bearer token",
+  "executionArgs": {
+    "projectName": "criminal_detection_system",
+    "projectPath": "c:\\Users\\tusha\\Desktop\\Arman Mulani - Copy\\criminal_detection_system",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-nDhlvLH78ajzkIDTzsToTdaLhJnS75CM0uLIdb7Tc_K4ymue7Hdip01BSixrFTdEa74RaIZN0LmXWT1QzXVZ8m7uSTjdLe41nbXeWQZadrd29Tbbuyc-NAzA0Vn8C6Nep1Y"
+    }
+  }
+}

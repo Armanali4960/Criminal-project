@@ -1,0 +1,7 @@
+[
+  {
+    "id": "TC001",
+    "title": "face_detection_functionality",
+    "description": "Test the face detection functionality using OpenCV to ensure it can detect faces in images."
+  }
+]

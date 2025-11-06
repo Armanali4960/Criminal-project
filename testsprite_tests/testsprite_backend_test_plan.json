@@ -1,0 +1,32 @@
+[
+  {
+    "id": "TC001",
+    "title": "citizen_dashboard_page_display",
+    "description": "Verify that the citizen dashboard page loads successfully and displays the interface for citizens to upload images for criminal detection."
+  },
+  {
+    "id": "TC002",
+    "title": "image_upload_and_processing",
+    "description": "Test the image upload API to ensure images are accepted, processed using OpenCV for face detection, and appropriate detection results are returned."
+  },
+  {
+    "id": "TC003",
+    "title": "police_dashboard_page_display",
+    "description": "Verify that the police dashboard page loads correctly and displays detection reports and criminal activity monitoring information."
+  },
+  {
+    "id": "TC004",
+    "title": "citizen_login_authentication",
+    "description": "Test the citizen login API to ensure valid credentials authenticate the user and invalid credentials are rejected."
+  },
+  {
+    "id": "TC005",
+    "title": "police_login_authentication",
+    "description": "Test the police login API to verify that police officers can authenticate successfully with valid credentials and are denied access with invalid credentials."
+  },
+  {
+    "id": "TC006",
+    "title": "citizen_registration_process",
+    "description": "Verify the citizen registration API to ensure new users can register successfully and duplicate or invalid registrations are handled properly."
+  }
+]

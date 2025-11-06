@@ -36,4 +36,4 @@ class DetectionResult(models.Model):
     detected_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"Detection of {self.criminal.name} in report {self.report.id}"
+        return f"Detection of {self.criminal.name} in report {self.report}"

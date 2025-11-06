@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "project": "Criminal Detection System",
+    "date": "2025-11-04",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "The Criminal Detection System is a Django-based web application designed to enable citizens to upload photos for automated criminal detection using face recognition. It provides dashboards for both citizens and police officers to manage uploads, view detection reports, and monitor criminal activity effectively.",
+  "core_goals": [
+    "Enable citizens to upload images and receive real-time criminal detection feedback.",
+    "Provide police officers with comprehensive dashboards to view and analyze detection reports and statistics.",
+    "Ensure secure authentication and user management for citizens and police officers.",
+    "Implement efficient face detection and matching using OpenCV for accurate criminal identification.",
+    "Maintain a scalable and responsive web application that works across devices."
+  ],
+  "key_features": [
+    "Citizen Dashboard for image uploads, real-time face detection, matching, and instant alerts.",
+    "Police Dashboard to access detailed detection reports, monitor criminals, and view analytics.",
+    "User registration, login, and authentication system for both citizens and police officers.",
+    "Criminal database management to store information and images of known criminals.",
+    "Face detection using OpenCV integrated with backend Django processing.",
+    "Detailed detection reporting linking images, locations, and confidence levels.",
+    "Responsive web design for compatibility with all common devices.",
+    "Admin panel for managing users, criminals, and reports (optional superuser)."
+  ],
+  "user_flow_summary": [
+    "Citizen registers or logs in on the system via the citizen dashboard interface.",
+    "Citizen uploads an image for criminal detection through the dashboard.",
+    "System processes the image using OpenCV face detection and matches against the criminal database.",
+    "If a match is found, an instant alert and detection report is generated and saved.",
+    "Police log into the police dashboard to view all detection reports and monitor criminal activity.",
+    "Police can access detailed information of each report including images and detection confidence.",
+    "System authenticates users appropriately and maintains session integrity during usage."
+  ],
+  "validation_criteria": [
+    "Successful image upload and processing with OpenCV face detection.",
+    "Accuracy of criminal matching against the stored criminal database.",
+    "User authentication and authorization mechanisms for both citizens and police officers.",
+    "Visualization and correctness of detection reports on police dashboard.",
+    "Responsiveness of the application across device types and browsers.",
+    "No critical errors or crashes during typical user interactions.",
+    "Complete and consistent data in the database models for criminals and detection reports."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "Python",
+      "Django",
+      "OpenCV",
+      "SQLite",
+      "HTML/CSS/JavaScript"
+    ],
+    "features": [
+      {
+        "name": "Citizen Dashboard",
+        "description": "Allows citizens to upload images for criminal detection",
+        "files": [
+          "detection/views.py",
+          "templates/detection/citizen_dashboard.html"
+        ],
+        "api_doc": {
+          "paths": {
+            "/": {
+              "get": {
+                "summary": "Citizen dashboard page",
+                "description": "Displays the citizen dashboard for uploading images"
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "Image Upload",
+        "description": "Handles image uploads from citizens for criminal detection",
+        "files": [
+          "detection/views.py"
+        ],
+        "api_doc": {
+          "paths": {
+            "/upload_image/": {
+              "post": {
+                "summary": "Upload image for detection",
+                "description": "Accepts image uploads and processes them for criminal detection"
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "Police Dashboard",
+        "description": "Allows police to view detection reports",
+        "files": [
+          "detection/views.py",
+          "templates/detection/police_dashboard.html"
+        ],
+        "api_doc": {
+          "paths": {
+            "/police_dashboard/": {
+              "get": {
+                "summary": "Police dashboard page",
+                "description": "Displays the police dashboard with detection reports"
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "Authentication",
+        "description": "Handles user authentication for citizens and police",
+        "files": [
+          "detection/views.py",
+          "templates/detection/login.html",
+          "templates/detection/police_login.html",
+          "templates/detection/register.html"
+        ],
+        "api_doc": {
+          "paths": {
+            "/login/": {
+              "post": {
+                "summary": "Citizen login",
+                "description": "Authenticates citizens"
+              }
+            },
+            "/police_login/": {
+              "post": {
+                "summary": "Police login",
+                "description": "Authenticates police officers"
+              }
+            },
+            "/register/": {
+              "post": {
+                "summary": "Citizen registration",
+                "description": "Registers new citizens"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
