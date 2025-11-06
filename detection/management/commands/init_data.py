@@ -11,23 +11,28 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write('Initializing database with sample data...')
         
-        # Ensure media directories exist
-        media_root = settings.MEDIA_ROOT
-        criminal_photos_dir = os.path.join(media_root, 'criminal_photos')
-        os.makedirs(criminal_photos_dir, exist_ok=True)
-        
-        self.stdout.write(f'Media directories created: {criminal_photos_dir}')
-        
-        # Create sample criminals if none exist
-        if Criminal.objects.count() == 0:
-            self.create_sample_criminals()
-        else:
-            self.stdout.write('Criminals already exist in database')
+        try:
+            # Ensure media directories exist
+            media_root = settings.MEDIA_ROOT
+            criminal_photos_dir = os.path.join(media_root, 'criminal_photos')
+            os.makedirs(criminal_photos_dir, exist_ok=True)
             
-        self.stdout.write(
-            self.style.SUCCESS('Database initialization completed successfully')
-        )
-        
+            self.stdout.write(f'Media directories created: {criminal_photos_dir}')
+            
+            # Create sample criminals if none exist
+            if Criminal.objects.count() == 0:
+                self.create_sample_criminals()
+            else:
+                self.stdout.write('Criminals already exist in database')
+                
+            self.stdout.write(
+                self.style.SUCCESS('Database initialization completed successfully')
+            )
+        except Exception as e:
+            self.stdout.write(
+                self.style.ERROR(f'Database initialization failed: {e}')
+            )
+            
     def create_sample_criminals(self):
         """Create sample criminals with photos"""
         criminals_data = [
@@ -45,20 +50,25 @@ class Command(BaseCommand):
             },
         ]
         
+        created_count = 0
         for data in criminals_data:
-            # Create criminal
-            criminal, created = Criminal.objects.get_or_create(
-                name=data['name'],
-                defaults=data
-            )
-            
-            if created:
-                self.stdout.write(f'Created criminal: {criminal.name}')
+            try:
+                # Create criminal
+                criminal, created = Criminal.objects.get_or_create(
+                    name=data['name'],
+                    defaults=data
+                )
                 
-            # Add sample photo
-            self.add_sample_photo(criminal)
+                if created:
+                    self.stdout.write(f'Created criminal: {criminal.name}')
+                    created_count += 1
+                    
+                # Add sample photo
+                self.add_sample_photo(criminal)
+            except Exception as e:
+                self.stdout.write(f'Could not create criminal {data["name"]}: {e}')
             
-        self.stdout.write(f'Created {len(criminals_data)} sample criminals')
+        self.stdout.write(f'Created {created_count} sample criminals')
             
     def add_sample_photo(self, criminal):
         """Add a sample photo for the criminal"""
