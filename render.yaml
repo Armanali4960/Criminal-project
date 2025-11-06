@@ -2,8 +2,8 @@ services:
   - type: web
     name: criminal-detection-system
     env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn criminal_detection_system.wsgi:application"
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn criminal_detection_system.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.15
