@@ -2,13 +2,17 @@
 # Exit on error
 set -o errexit
 
-# Ensure we're using the correct Python version
-echo "Using Python version: $(python --version)"
+# Explicitly set Python version
+export PYTHON_VERSION=3.10.15
+
+# Display Python version being used
+echo "Python version: $(python --version)"
+echo "Python path: $(which python)"
 
 # Upgrade pip
 pip install --upgrade pip
 
-# Install setuptools and wheel first
+# Install build dependencies first
 pip install setuptools==69.5.1 wheel==0.43.0 build==1.2.1
 
 # Install numpy first (required by opencv-python)
