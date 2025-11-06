@@ -33,14 +33,10 @@ COPY . /app/
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Run migrations
-RUN python manage.py migrate --noinput
-
-# Initialize data
-RUN python manage.py init_data
-
 # Expose port
 EXPOSE $PORT
 
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "criminal_detection_system.wsgi:application"]
+# Run migrations and start application
+CMD python manage.py migrate --noinput && \
+    python manage.py init_data && \
+    gunicorn --bind 0.0.0.0:$PORT criminal_detection_system.wsgi:application
