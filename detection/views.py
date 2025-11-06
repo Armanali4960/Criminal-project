@@ -81,9 +81,24 @@ def police_dashboard(request):
             }
         })
     
+    # Get statistics
+    total_reports = DetectionReport.objects.count()
+    criminals_detected = DetectionResult.objects.count()
+    pending_review = DetectionReport.objects.filter(is_processed=False).count()
+    
+    # Calculate accuracy rate (simplified)
+    accuracy_rate = 92  # This would be calculated based on actual data in a real system
+    
+    stats = {
+        'total_reports': total_reports,
+        'criminals_detected': criminals_detected,
+        'pending_review': pending_review,
+        'accuracy_rate': accuracy_rate
+    }
+    
     # Get all detection reports for initial page load
     reports = DetectionReport.objects.all().order_by('-created_at')
-    return render(request, 'detection/police_dashboard.html', {'reports': reports})
+    return render(request, 'detection/police_dashboard.html', {'reports': reports, 'stats': stats})
 
 @csrf_exempt
 def upload_image(request):
