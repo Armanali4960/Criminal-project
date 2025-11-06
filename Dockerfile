@@ -35,7 +35,7 @@ RUN python manage.py collectstatic --noinput
 RUN python manage.py migrate
 
 # Expose port
-EXPOSE 8000
+EXPOSE $PORT
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "criminal_detection_system.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "criminal_detection_system.wsgi:application"]
