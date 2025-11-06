@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=69.5.1", "wheel>=0.43.0", "build>=1.2.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "criminal-detection-system"
+version = "1.0.0"
+description = "A Django-based web application for criminal detection"
+requires-python = ">=3.10.15"
+dependencies = [
+    "Django==5.1",
+    "opencv-python==4.8.0.74",
+    "numpy==1.24.3",
+    "Pillow==10.0.0",
+    "gunicorn==21.2.0",
+    "whitenoise==6.5.0",
+    "dj-database-url==2.1.0",
+    "psycopg2-binary==2.9.7"
+]
+
+[tool.setuptools]
+packages = ["criminal_detection_system", "detection"]
