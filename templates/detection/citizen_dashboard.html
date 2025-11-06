@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criminal Detection System - Citizen Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'citizen_dashboard' %}">
+                <i class="fas fa-search"></i> Criminal Detection System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'citizen_dashboard' %}">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                </ul>
+                <div class="user-info">
+                    <span class="user-badge">
+                        <i class="fas fa-user"></i> Citizen
+                    </span>
+                    <a href="{% url 'citizen_logout' %}" class="btn btn-outline-light ms-2">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1 class="fade-in-down">
+                        <i class="fas fa-search"></i> Citizen Dashboard
+                    </h1>
+                    <p class="lead fade-in-up">Helping keep communities safe through advanced technology</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card dashboard-card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="fas fa-camera"></i> Upload Photo for Detection
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="detectionForm" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- Upload Area -->
+                            <div class="upload-area" id="uploadArea">
+                                <div class="upload-content">
+                                    <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                    <h4>Upload Photo</h4>
+                                    <p class="text-muted">Drag & drop your photo here or click to browse</p>
+                                    <p class="small text-muted">Supports JPG, PNG (Max 16MB)</p>
+                                </div>
+                                <input type="file" id="photoInput" name="photo" accept="image/*" class="d-none">
+                            </div>
+                            
+                            <!-- Image Preview -->
+                            <div id="imagePreview" class="mt-4 d-none">
+                                <h5 class="text-center">Image Preview:</h5>
+                                <div class="preview-container text-center">
+                                    <img id="previewImg" src="" alt="Preview" class="preview-image">
+                                </div>
+                            </div>
+                            
+                            <!-- Camera Capture Section -->
+                            <div class="text-center mt-4">
+                                <a href="{% url 'camera_page' %}" class="btn btn-outline-primary" target="_blank">
+                                    <i class="fas fa-camera"></i> Use Camera
+                                </a>
+                            </div>
+                            
+                            <!-- Location Input -->
+                            <div class="mt-4">
+                                <label for="location" class="form-label">
+                                    <i class="fas fa-map-marker-alt"></i> Location (Optional)
+                                </label>
+                                <input type="text" class="form-control" id="location" name="location" placeholder="Enter location details">
+                                <div class="form-text">
+                                    Include street address, landmark, or general area
+                                </div>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                                    <i class="fas fa-search"></i> Detect Criminals
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary ms-2" id="retakeButton">
+                                    <i class="fas fa-redo"></i> Retake Photo
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Processing Indicator -->
+                        <div id="processingIndicator" class="text-center mt-4 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Processing...</span>
+                            </div>
+                            <p class="mt-2">Analyzing image for criminal detection...</p>
+                        </div>
+                        
+                        <!-- Results Section -->
+                        <div id="resultsSection" class="mt-4 d-none">
+                            <div id="resultsContent"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- How It Works Section -->
+                <div class="card dashboard-card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-info-circle"></i> How It Works
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ol>
+                                    <li><strong>Upload Photo:</strong> Take a photo of a person or upload an existing image</li>
+                                    <li><strong>Use Camera:</strong> Click "Use Camera" to capture a live photo with your device camera</li>
+                                    <li><strong>Detection:</strong> Our system scans the image for faces</li>
+                                </ol>
+                            </div>
+                            <div class="col-md-6">
+                                <ol start="4">
+                                    <li><strong>Matching:</strong> Faces are compared against our criminal database</li>
+                                    <li><strong>Alert:</strong> If a match is found, police are immediately notified</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> For best results, use clear, well-lit photos with faces clearly visible. The camera feature works best in good lighting conditions.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Privacy Notice -->
+                <div class="card dashboard-card mt-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-shield-alt"></i> Privacy Notice
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p>All images are processed securely and deleted after analysis unless a criminal is detected.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-4 bg-dark text-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-search"></i> Criminal Detection System</h5>
+                    <p>Helping keep communities safe through advanced technology.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2025 Criminal Detection System. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% load static %}
+    <script src="{% static 'js/custom.js' %}"></script>
+</body>
+</html>

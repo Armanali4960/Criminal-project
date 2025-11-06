@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criminal Detection System - Police Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'police_dashboard' %}">
+                <i class="fas fa-shield-alt"></i> Criminal Detection System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'police_dashboard' %}">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-bell"></i> Alerts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-cogs"></i> Settings
+                        </a>
+                    </li>
+                </ul>
+                <div class="user-info">
+                    <span class="user-badge">
+                        <i class="fas fa-user-shield"></i> Police Officer
+                    </span>
+                    <a href="{% url 'police_logout' %}" class="btn btn-outline-light ms-2">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                    <a href="{% url 'citizen_dashboard' %}" class="btn btn-sm btn-light ms-2">
+                        <i class="fas fa-user"></i> Citizen Portal
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1 class="fade-in-down">
+                        <i class="fas fa-shield-alt"></i> Police Dashboard
+                    </h1>
+                    <p class="lead mb-0 fade-in-up">Criminal Detection System - Real-time Monitoring</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid py-4 police-dashboard">
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card bg-white">
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-number">142</div>
+                    <div class="stat-label">Total Reports</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card bg-white">
+                    <div class="stat-icon bg-danger bg-opacity-10 text-danger">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="stat-number">27</div>
+                    <div class="stat-label">Criminals Detected</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card bg-white">
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card bg-white">
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-number">92%</div>
+                    <div class="stat-label">Accuracy Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card dashboard-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bell"></i> Recent Detection Reports
+                        </h5>
+                        <div>
+                            <button class="btn btn-sm btn-light" id="refreshBtn">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                            <button class="btn btn-sm btn-success ms-2" id="autoRefreshBtn" data-active="false">
+                                <i class="fas fa-play"></i> Auto Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Report ID</th>
+                                        <th>Date & Time</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for report in reports %}
+                                        <tr class="{% if report.results.all %}alert-criminal{% endif %}">
+                                            <td>{{ report.id|slice:":12" }}...</td>
+                                            <td>{{ report.detection_time|date:"M d, Y H:i" }}</td>
+                                            <td>{{ report.location|default:"" }}</td>
+                                            <td>
+                                                <span class="badge bg-{% if report.results.all %}danger{% else %}success{% endif %}">
+                                                    {% if report.results.all %}Criminal Detected{% else %}No Match{% endif %}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary view-details" data-report="{{ report.id }}" data-bs-toggle="tooltip" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card dashboard-card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tasks"></i> Active Alerts
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="detection-result positive mb-3">
+                            <h6>High Priority Alert</h6>
+                            <p class="mb-1"><strong>Subject:</strong> John Doe</p>
+                            <p class="mb-1"><strong>Last Seen:</strong> Downtown Mall</p>
+                            <p class="mb-2"><strong>Time:</strong> 2 hours ago</p>
+                            <button class="btn btn-sm btn-danger">
+                                <i class="fas fa-bullhorn"></i> Broadcast Alert
+                            </button>
+                        </div>
+                        
+                        <div class="detection-result positive mb-3">
+                            <h6>Medium Priority Alert</h6>
+                            <p class="mb-1"><strong>Subject:</strong> Jane Smith</p>
+                            <p class="mb-1"><strong>Last Seen:</strong> Railway Station</p>
+                            <p class="mb-2"><strong>Time:</strong> 4 hours ago</p>
+                            <button class="btn btn-sm btn-warning">
+                                <i class="fas fa-bullhorn"></i> Broadcast Alert
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-plus"></i> Create New Alert
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card dashboard-card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-bar"></i> Detection Statistics
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Face Detection Accuracy</span>
+                                <span>94%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 94%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Database Match Rate</span>
+                                <span>87%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 87%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>False Positive Rate</span>
+                                <span>3%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 3%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="detectionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Details Modal -->
+    <div class="modal fade" id="reportDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-alt"></i> Detection Report Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>Report ID:</strong> <span id="modalReportId"></span></p>
+                            <p><strong>Date & Time:</strong> <span id="modalDateTime"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+                            <p><strong>Status:</strong> 
+                                <span class="badge bg-success" id="modalStatus">No Match</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="detection-result positive">
+                        <h5>Detection Results</h5>
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <div class="bg-light rounded p-3 mb-3">
+                                    <i class="fas fa-user-shield fa-3x text-danger"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <h5>John Doe</h5>
+                                <p class="mb-2"><strong>Confidence Level:</strong> 92.5%</p>
+                                <div class="confidence-meter mb-3">
+                                    <div class="confidence-bar progress-bar bg-danger" role="progressbar" style="width: 92.5%"></div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download"></i> Download Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-flag"></i> Mark as Reviewed
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% load static %}
+    <script src="{% static 'js/custom.js' %}"></script>
+    <script>
+        // Initialize chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('detectionChart').getContext('2d');
+            const detectionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Detections',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'False Positives',
+                        data: [1, 2, 1, 0, 1, 0],
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

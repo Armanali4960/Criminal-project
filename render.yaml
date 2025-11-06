@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: criminal-detection-system
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn criminal_detection_system.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.6
+      - key: DJANGO_SETTINGS_MODULE
+        value: criminal_detection_system.settings
+      - key: SECRET_KEY
+        sync: false
+      - key: WEB_CONCURRENCY
+        value: 4
+
+  - type: redis
+    name: redis
+    ipAllowList: []
+    plan: free
+    maxmemoryPolicy: noeviction
