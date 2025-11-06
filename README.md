@@ -25,7 +25,7 @@ A Django-based web application that allows citizens to upload photos for crimina
 
 ## Requirements
 
-- Python 3.8+
+- Python 3.10.15
 - Django 5.1
 - OpenCV-Python 4.8.0.74
 - NumPy 1.24.3
