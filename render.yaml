@@ -3,7 +3,7 @@ services:
     name: criminal-detection-system
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn criminal_detection_system.wsgi:application"
+    startCommand: "gunicorn --bind 0.0.0.0:$PORT criminal_detection_system.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.15
@@ -13,6 +13,8 @@ services:
         sync: false
       - key: WEB_CONCURRENCY
         value: 4
+      - key: PORT
+        value: 8000
 
   - type: redis
     name: redis
