@@ -35,6 +35,9 @@ RUN python manage.py collectstatic --noinput
 # Run migrations
 RUN python manage.py migrate --noinput
 
+# Initialize data
+RUN python manage.py init_data
+
 # Expose port
 EXPOSE $PORT
 
