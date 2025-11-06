@@ -1,10 +1,12 @@
 services:
   - type: web
     name: criminalproject
-    env: docker
-    dockerfilePath: ./Dockerfile
-    startCommand: ""
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn criminal_detection_system.wsgi:application"
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.15
       - key: DJANGO_SETTINGS_MODULE
         value: criminal_detection_system.settings
       - key: SECRET_KEY
