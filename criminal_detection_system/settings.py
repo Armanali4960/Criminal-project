@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,7 +11,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-7!+!+v!v!v!v!v!v!v!v!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Allow hosts for Render deployment
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,criminalproject.onrender.com,criminalproject.onrender.com').split(',')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS]
 
 # Application definition
 INSTALLED_APPS = [
@@ -70,6 +73,12 @@ else:
         }
     }
 
+# Ensure the database is ready for use
+try:
+    DATABASES['default']['OPTIONS'] = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+except:
+    pass
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -110,3 +119,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Session settings
 SESSION_COOKIE_AGE = 3600  # 1 hour
 SESSION_SAVE_EVERY_REQUEST = True
+
+# Security settings for production
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = False  # Let Render handle SSL
