@@ -280,6 +280,12 @@ function usePhoto() {
     // Store image data in sessionStorage
     sessionStorage.setItem('capturedImageData', imageData);
     
+    // Store location data if available
+    const locationInput = document.getElementById('cameraLocation');
+    if (locationInput && locationInput.value.trim() !== '') {
+        sessionStorage.setItem('capturedLocation', locationInput.value.trim());
+    }
+    
     // Redirect to citizen dashboard
     window.location.href = '/';
 }

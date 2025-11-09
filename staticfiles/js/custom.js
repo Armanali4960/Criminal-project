@@ -11,33 +11,39 @@ let isCameraActive = false;
 let cameraRetryCount = 0;
 const MAX_CAMERA_RETRIES = 3;
 
-// DOM Elements
-const uploadArea = document.getElementById('uploadArea');
-const photoInput = document.getElementById('photoInput');
-const previewImg = document.getElementById('previewImg');
-const imagePreview = document.getElementById('imagePreview');
-const detectionForm = document.getElementById('detectionForm');
-const processingIndicator = document.getElementById('processingIndicator');
-const resultsSection = document.getElementById('resultsSection');
-const resultsContent = document.getElementById('resultsContent');
-const submitBtn = document.getElementById('submitBtn');
-const retakeButton = document.getElementById('retakeButton');
-const refreshBtn = document.getElementById('refreshBtn');
-const autoRefreshBtn = document.getElementById('autoRefreshBtn');
-const cameraVideo = document.getElementById('cameraVideo');
-const cameraCanvas = document.getElementById('cameraCanvas');
-const cameraModal = document.getElementById('cameraModal');
-const cameraButton = document.getElementById('cameraButton');
-const captureBtn = document.getElementById('captureBtn');
-const switchCameraBtn = document.getElementById('switchCameraBtn');
+// DOM Elements - will be initialized after DOM is loaded
+let uploadArea, photoInput, previewImg, imagePreview, detectionForm, processingIndicator, 
+    resultsSection, resultsContent, submitBtn, retakeButton, refreshBtn, autoRefreshBtn, 
+    cameraVideo, cameraCanvas, cameraModal, cameraButton, captureBtn, switchCameraBtn;
 
 console.log('JavaScript loaded');
-console.log('Camera button:', cameraButton);
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded and parsed');
-    console.log('Camera button in DOMContentLoaded:', cameraButton);
+    
+    // Initialize DOM elements
+    uploadArea = document.getElementById('uploadArea');
+    photoInput = document.getElementById('photoInput');
+    previewImg = document.getElementById('previewImg');
+    imagePreview = document.getElementById('imagePreview');
+    detectionForm = document.getElementById('detectionForm');
+    processingIndicator = document.getElementById('processingIndicator');
+    resultsSection = document.getElementById('resultsSection');
+    resultsContent = document.getElementById('resultsContent');
+    submitBtn = document.getElementById('submitBtn');
+    retakeButton = document.getElementById('retakeButton');
+    refreshBtn = document.getElementById('refreshBtn');
+    autoRefreshBtn = document.getElementById('autoRefreshBtn');
+    cameraVideo = document.getElementById('cameraVideo');
+    cameraCanvas = document.getElementById('cameraCanvas');
+    cameraModal = document.getElementById('cameraModal');
+    cameraButton = document.getElementById('cameraButton');
+    captureBtn = document.getElementById('captureBtn');
+    switchCameraBtn = document.getElementById('switchCameraBtn');
+    
+    console.log('Camera button:', cameraButton);
+    
     initEventListeners();
     initRealTimeFeatures();
     initTooltips();
@@ -47,7 +53,92 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add animation to cards
     animateCards();
+    
+    // Initialize new button event listeners
+    initChoiceButtons();
 });
+
+// Initialize choice buttons for upload and camera
+function initChoiceButtons() {
+    const uploadBtn = document.getElementById('uploadBtn');
+    const cameraBtn = document.getElementById('cameraBtn');
+    const backToChoiceBtn = document.getElementById('backToChoiceBtn');
+    const backToChoiceFromUploadBtn = document.getElementById('backToChoiceFromUploadBtn');
+    const choiceSection = document.getElementById('choiceSection');
+    const uploadArea = document.getElementById('uploadArea');
+    const cameraSection = document.getElementById('cameraSection');
+    const retakeButton = document.getElementById('retakeButton');
+    
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', function() {
+            choiceSection.classList.add('d-none');
+            uploadArea.classList.remove('d-none');
+            if (retakeButton) retakeButton.classList.remove('d-none');
+            if (backToChoiceFromUploadBtn) backToChoiceFromUploadBtn.classList.remove('d-none');
+        });
+    }
+    
+    if (cameraBtn) {
+        cameraBtn.addEventListener('click', function() {
+            choiceSection.classList.add('d-none');
+            cameraSection.classList.remove('d-none');
+        });
+    }
+    
+    if (backToChoiceBtn) {
+        backToChoiceBtn.addEventListener('click', function() {
+            cameraSection.classList.add('d-none');
+            choiceSection.classList.remove('d-none');
+        });
+    }
+    
+    if (backToChoiceFromUploadBtn) {
+        backToChoiceFromUploadBtn.addEventListener('click', function() {
+            // Reset upload area
+            resetUploadArea();
+            if (uploadArea) uploadArea.classList.add('d-none');
+            if (retakeButton) retakeButton.classList.add('d-none');
+            backToChoiceFromUploadBtn.classList.add('d-none');
+            choiceSection.classList.remove('d-none');
+        });
+    }
+}
+
+// Reset upload area to initial state
+function resetUploadArea() {
+    const imagePreview = document.getElementById('imagePreview');
+    const uploadArea = document.getElementById('uploadArea');
+    const photoInput = document.getElementById('photoInput');
+    const previewImg = document.getElementById('previewImg');
+    const submitBtn = document.getElementById('submitBtn');
+    const retakeButton = document.getElementById('retakeButton');
+    
+    if (imagePreview) {
+        imagePreview.classList.add('d-none');
+    }
+    
+    if (uploadArea) {
+        uploadArea.classList.remove('d-none');
+    }
+    
+    if (photoInput) {
+        photoInput.value = '';
+    }
+    
+    if (previewImg) {
+        previewImg.src = '';
+    }
+    
+    if (submitBtn) {
+        submitBtn.disabled = true;
+    }
+    
+    if (retakeButton) {
+        retakeButton.classList.add('d-none');
+    }
+    
+    imageData = '';
+}
 
 // Add animation to cards
 function animateCards() {
@@ -114,6 +205,17 @@ function showNotification(message, type) {
 function initEventListeners() {
     console.log('Initializing event listeners');
     
+    // Remove automatic location detection on page load
+    // getCurrentLocation(); // Commented out to prevent automatic detection
+    
+    // Add event listener for location detection button
+    const detectBtn = document.getElementById('detectLocationBtn');
+    if (detectBtn) {
+        detectBtn.addEventListener('click', function() {
+            getCurrentLocation();
+        });
+    }
+    
     // File upload functionality
     if (uploadArea) {
         console.log('Upload area found');
@@ -170,6 +272,7 @@ function initEventListeners() {
     }
     
     // Camera functionality
+    // Note: cameraButton is for the modal, not the new button on the dashboard
     if (cameraButton) {
         console.log('Camera button found, adding event listener');
         cameraButton.addEventListener('click', function(e) {
@@ -275,10 +378,6 @@ function hideImagePreview() {
         imagePreview.style.display = 'none';
     }
     
-    if (previewImg) {
-        previewImg.src = '';
-    }
-    
     if (uploadArea) {
         uploadArea.style.display = 'block';
     }
@@ -309,36 +408,6 @@ function showImagePreview(dataUrl) {
 function retakePhoto() {
     resetUploadArea();
     showNotification('Photo discarded. You can upload or capture a new photo.', 'info');
-}
-
-// Reset upload area to initial state
-function resetUploadArea() {
-    if (imagePreview) {
-        imagePreview.style.display = 'none';
-    }
-    
-    if (uploadArea) {
-        uploadArea.style.display = 'block';
-    }
-    
-    if (photoInput) {
-        photoInput.value = '';
-    }
-    
-    if (previewImg) {
-        previewImg.src = '';
-    }
-    
-    if (submitBtn) {
-        submitBtn.disabled = true;
-    }
-    
-    // Hide retake button
-    if (retakeButton) {
-        retakeButton.classList.add('d-none');
-    }
-    
-    imageData = '';
 }
 
 // Submit detection
@@ -480,9 +549,9 @@ function displayResults(data) {
                         </div>
                         <div class="col-md-9">
                             <h5>${detection.criminal_name}</h5>
-                            <p class="mb-2"><strong>Confidence Level:</strong> ${(detection.confidence * 100).toFixed(1)}%</p>
+                            <p class="mb-2"><strong>Confidence Level:</strong> ${parseFloat(detection.confidence).toFixed(2)}%</p>
                             <div class="progress mb-3">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: ${(detection.confidence * 100)}%"></div>
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: ${parseFloat(detection.confidence)}%"></div>
                             </div>
                         </div>
                     </div>
@@ -861,8 +930,8 @@ function viewReportDetails(reportId) {
             if (resultsContainer && data.detections.length > 0) {
                 const detection = data.detections[0]; // For simplicity, show first detection
                 resultsContainer.querySelector('h5').textContent = detection.criminal_name;
-                resultsContainer.querySelector('.confidence-meter .progress-bar').style.width = `${detection.confidence * 100}%`;
-                resultsContainer.querySelector('p.mb-2').innerHTML = `<strong>Confidence Level:</strong> ${(detection.confidence * 100).toFixed(1)}%`;
+                resultsContainer.querySelector('.confidence-meter .progress-bar').style.width = `${parseFloat(detection.confidence)}%`;
+                resultsContainer.querySelector('p.mb-2').innerHTML = `<strong>Confidence Level:</strong> ${parseFloat(detection.confidence).toFixed(2)}%`;
             }
             
             // Show modal
@@ -872,5 +941,75 @@ function viewReportDetails(reportId) {
         .catch(error => {
             console.error('Error fetching report details:', error);
             showNotification('Failed to load report details. Please try again.', 'danger');
+        });
+}
+
+// Get user's current location automatically
+function getCurrentLocation() {
+    const locationInput = document.getElementById('location');
+    if (!locationInput) return;
+    
+    // Show that we're getting location
+    locationInput.placeholder = 'Detecting location...';
+    locationInput.disabled = true;
+    
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            // Success callback
+            function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                
+                // Reverse geocode to get address
+                reverseGeocode(lat, lon, locationInput);
+            },
+            // Error callback
+            function(error) {
+                console.error('Geolocation error:', error);
+                locationInput.placeholder = 'Enter location details (e.g., address, landmark)';
+                locationInput.disabled = false;
+                showNotification('Could not detect location. Please enter manually.', 'warning');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000 // 5 minutes
+            }
+        );
+    } else {
+        locationInput.placeholder = 'Enter location details (e.g., address, landmark)';
+        locationInput.disabled = false;
+        showNotification('Geolocation is not supported by your browser. Please enter location manually.', 'warning');
+    }
+}
+
+// Reverse geocode coordinates to get address
+function reverseGeocode(lat, lon, locationInput) {
+    // Using OpenStreetMap Nominatim API for reverse geocoding
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.display_name) {
+                locationInput.value = data.display_name;
+                locationInput.placeholder = 'Enter location details (e.g., address, landmark)';
+                locationInput.disabled = false;
+                showNotification('Location detected successfully!', 'success');
+            } else {
+                // Fallback to coordinates
+                locationInput.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                locationInput.placeholder = 'Enter location details (e.g., address, landmark)';
+                locationInput.disabled = false;
+                showNotification('Location detected (coordinates only).', 'info');
+            }
+        })
+        .catch(error => {
+            console.error('Reverse geocoding error:', error);
+            // Fallback to coordinates
+            locationInput.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+            locationInput.placeholder = 'Enter location details (e.g., address, landmark)';
+            locationInput.disabled = false;
+            showNotification('Location detected (coordinates only).', 'info');
         });
 }

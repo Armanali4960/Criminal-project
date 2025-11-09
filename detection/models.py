@@ -35,5 +35,12 @@ class DetectionResult(models.Model):
     face_coordinates = models.TextField()  # Store face bounding box coordinates as JSON string
     detected_at = models.DateTimeField(auto_now_add=True)
     
+    # Verification fields for accuracy tracking
+    is_verified = models.BooleanField(default=False)  # Whether this detection was verified by police
+    is_correct = models.BooleanField(null=True, blank=True)  # Whether the detection was correct
+    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_detections')
+    verification_notes = models.TextField(blank=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    
     def __str__(self):
         return f"Detection of {self.criminal.name} in report {self.report}"

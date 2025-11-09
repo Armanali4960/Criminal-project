@@ -868,3 +868,171 @@ body {
   width: 100%;
   margin-top: 1rem;
 }
+
+/* Police Dashboard Specific Styles */
+.dashboard-header {
+  background: linear-gradient(135deg, var(--primary-color), #1a2530);
+  color: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.stat-card-modern {
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.stat-card-modern:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-icon-modern {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-right: 15px;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number-modern {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label-modern {
+  font-size: 0.9rem;
+  color: var(--light-text);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-card-modern {
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border: none;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.card-header-modern {
+  background: white;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding: 1.25rem 1.5rem;
+  font-weight: 600;
+}
+
+.alert-card {
+  border-left: 4px solid var(--accent-color);
+  background: rgba(231, 76, 60, 0.05);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.alert-card.warning {
+  border-left-color: var(--warning-color);
+  background: rgba(243, 156, 18, 0.05);
+}
+
+.alert-card h6 {
+  margin-bottom: 0.75rem;
+  color: var(--dark-text);
+}
+
+.progress-modern {
+  height: 10px;
+  border-radius: 5px;
+  background-color: #e9ecef;
+}
+
+.progress-bar-modern {
+  border-radius: 5px;
+}
+
+.table-modern th {
+  font-weight: 600;
+  color: var(--light-text);
+  border-top: none;
+}
+
+.table-modern td {
+  vertical-align: middle;
+}
+
+.badge-criminal {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--accent-color);
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+}
+
+.badge-no-match {
+  background-color: rgba(39, 174, 96, 0.1);
+  color: var(--success-color);
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.refresh-controls .btn {
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+.detection-result-modern {
+  border-radius: 10px;
+  padding: 1.25rem;
+  background: var(--light-bg);
+  margin-bottom: 1rem;
+}
+
+.confidence-meter-modern {
+  margin: 1rem 0;
+}
+
+.confidence-value {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--accent-color);
+}
+
+.action-buttons .btn {
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .stat-card-modern {
+    margin-bottom: 1rem;
+  }
+  
+  .stat-number-modern {
+    font-size: 1.5rem;
+  }
+}

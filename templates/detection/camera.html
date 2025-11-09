@@ -63,6 +63,12 @@
         letter-spacing: 1px;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
+    #locationSection {
+        margin-top: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 15px;
+    }
 </style>
 {% endblock %}
 
@@ -97,6 +103,22 @@
             <h3>Photo Preview</h3>
             <img id="previewImg" src="" alt="Preview">
             
+            <!-- Location Section -->
+            <div id="locationSection">
+                <label for="cameraLocation" class="form-label">
+                    <i class="fas fa-map-marker-alt"></i> Location
+                </label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="cameraLocation" placeholder="Detecting location...">
+                    <button class="btn btn-outline-light" type="button" id="detectCameraLocationBtn">
+                        <i class="fas fa-location-arrow"></i> Detect
+                    </button>
+                </div>
+                <div class="form-text text-light">
+                    Automatically detected or enter street address, landmark, or general area
+                </div>
+            </div>
+            
             <div class="controls">
                 <button type="button" class="btn btn-outline-light" id="retakeBtn">
                     <i class="fas fa-redo"></i> Retake Photo
@@ -108,5 +130,103 @@
         </div>
     </div>
 
+    <script>
+        // Get user's current location automatically
+        function getCurrentLocation() {
+            const locationInput = document.getElementById('cameraLocation');
+            if (!locationInput) return;
+            
+            // Show that we're getting location
+            locationInput.placeholder = 'Detecting location...';
+            locationInput.disabled = true;
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    // Success callback
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        
+                        // Reverse geocode to get address
+                        reverseGeocode(lat, lon, locationInput);
+                    },
+                    // Error callback
+                    function(error) {
+                        console.error('Geolocation error:', error);
+                        locationInput.placeholder = 'Enter location details';
+                        locationInput.disabled = false;
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 300000 // 5 minutes
+                    }
+                );
+            } else {
+                locationInput.placeholder = 'Enter location details';
+                locationInput.disabled = false;
+            }
+        }
+
+        // Reverse geocode coordinates to get address
+        function reverseGeocode(lat, lon, locationInput) {
+            // Using OpenStreetMap Nominatim API for reverse geocoding
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        locationInput.value = data.display_name;
+                        locationInput.placeholder = 'Enter location details';
+                        locationInput.disabled = false;
+                    } else {
+                        // Fallback to coordinates
+                        locationInput.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                        locationInput.placeholder = 'Enter location details';
+                        locationInput.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Reverse geocoding error:', error);
+                    // Fallback to coordinates
+                    locationInput.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                    locationInput.placeholder = 'Enter location details';
+                    locationInput.disabled = false;
+                });
+        }
+
+        // Add event listener for location detection button
+        document.addEventListener('DOMContentLoaded', function() {
+            const detectBtn = document.getElementById('detectCameraLocationBtn');
+            if (detectBtn) {
+                detectBtn.addEventListener('click', function() {
+                    getCurrentLocation();
+                });
+            }
+            
+            // Get location when preview is shown
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                        const previewContainer = document.getElementById('previewContainer');
+                        if (previewContainer && previewContainer.style.display !== 'none') {
+                            // Preview is shown, get location
+                            setTimeout(getCurrentLocation, 500);
+                        }
+                    }
+                });
+            });
+            
+            const previewContainer = document.getElementById('previewContainer');
+            if (previewContainer) {
+                observer.observe(previewContainer, {
+                    attributes: true,
+                    attributeFilter: ['style']
+                });
+            }
+        });
+    </script>
+    
     <script src="{% static 'js/camera.js' %}"></script>
 {% endblock %}

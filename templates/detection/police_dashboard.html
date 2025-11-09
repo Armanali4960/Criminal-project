@@ -4,391 +4,761 @@
 {% block title %}Criminal Detection System - Police Dashboard{% endblock %}
 
 {% block content %}
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <h1 class="fade-in-down">
-                        <i class="fas fa-shield-alt"></i> Police Dashboard
-                    </h1>
-                    <p class="lead mb-0 fade-in-up">Criminal Detection System - Real-time Monitoring</p>
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #e74c3c;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+        --light-bg: #f8f9fa;
+        --dark-text: #2c3e50;
+        --light-text: #7f8c8d;
+    }
+    
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--primary-color), #1a2530);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+    
+    .stat-content {
+        flex: 1;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--light-text);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .dashboard-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border: none;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background: white;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 1.25rem 1.5rem;
+        font-weight: 600;
+    }
+    
+    .alert-card {
+        border-left: 4px solid var(--accent-color);
+        background: rgba(231, 76, 60, 0.05);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .alert-card.warning {
+        border-left-color: var(--warning-color);
+        background: rgba(243, 156, 18, 0.05);
+    }
+    
+    .alert-card h6 {
+        margin-bottom: 0.75rem;
+        color: var(--dark-text);
+    }
+    
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+        background-color: #e9ecef;
+    }
+    
+    .progress-bar {
+        border-radius: 5px;
+    }
+    
+    .table th {
+        font-weight: 600;
+        color: var(--light-text);
+        border-top: none;
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+    
+    .badge-criminal {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: var(--accent-color);
+        padding: 0.5em 0.75em;
+        font-weight: 500;
+    }
+    
+    .badge-no-match {
+        background-color: rgba(39, 174, 96, 0.1);
+        color: var(--success-color);
+        padding: 0.5em 0.75em;
+        font-weight: 500;
+    }
+    
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+    
+    .refresh-controls .btn {
+        border-radius: 50px;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .detection-result {
+        border-radius: 10px;
+        padding: 1.25rem;
+        background: var(--light-bg);
+        margin-bottom: 1rem;
+    }
+    
+    .confidence-meter {
+        margin: 1rem 0;
+    }
+    
+    .confidence-value {
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: var(--accent-color);
+    }
+    
+    .action-buttons .btn {
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 768px) {
+        .stat-card {
+            margin-bottom: 1rem;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<!-- Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="mb-2">
+                    <i class="fas fa-shield-alt me-3"></i>Police Dashboard
+                </h1>
+                <p class="lead mb-0">Criminal Detection System - Real-time Monitoring</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="d-flex justify-content-end align-items-center">
+                    <div class="refresh-controls me-3">
+                        <button class="btn btn-light me-2" id="refreshBtn">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh
+                        </button>
+                        <button class="btn btn-success" id="autoRefreshBtn" data-active="false">
+                            <i class="fas fa-play me-1"></i> Auto
+                        </button>
+                    </div>
+                    <div class="admin-panel-link">
+                        <a href="/admin/" class="btn btn-dark" target="_blank">
+                            <i class="fas fa-cog me-1"></i> Admin Panel
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</div>
 
-    <div class="container-fluid py-4 police-dashboard">
-        <!-- Stats Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="stat-card bg-white">
+<div class="container-fluid py-2">
+    <!-- Stats Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card bg-white">
+                <div class="card-body d-flex align-items-center">
                     <div class="stat-icon bg-primary bg-opacity-10 text-primary">
                         <i class="fas fa-file-alt"></i>
                     </div>
-                    <div class="stat-number" id="totalReports">{{ stats.total_reports }}</div>
-                    <div class="stat-label">Total Reports</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalReports">{{ stats.total_reports }}</div>
+                        <div class="stat-label">Total Reports</div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card bg-white">
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card bg-white">
+                <div class="card-body d-flex align-items-center">
                     <div class="stat-icon bg-danger bg-opacity-10 text-danger">
                         <i class="fas fa-user-shield"></i>
                     </div>
-                    <div class="stat-number" id="criminalsDetected">{{ stats.criminals_detected }}</div>
-                    <div class="stat-label">Criminals Detected</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="criminalsDetected">{{ stats.criminals_detected }}</div>
+                        <div class="stat-label">Criminals Detected</div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card bg-white">
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card bg-white">
+                <div class="card-body d-flex align-items-center">
                     <div class="stat-icon bg-warning bg-opacity-10 text-warning">
                         <i class="fas fa-clock"></i>
                     </div>
-                    <div class="stat-number" id="pendingReview">{{ stats.pending_review }}</div>
-                    <div class="stat-label">Pending Review</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="pendingReview">{{ stats.pending_review }}</div>
+                        <div class="stat-label">Pending Review</div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card bg-white">
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card bg-white">
+                <div class="card-body d-flex align-items-center">
                     <div class="stat-icon bg-success bg-opacity-10 text-success">
                         <i class="fas fa-percentage"></i>
                     </div>
-                    <div class="stat-number" id="accuracyRateCard">{{ stats.accuracy_rate }}%</div>
-                    <div class="stat-label">Accuracy Rate</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="card dashboard-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="fas fa-bell"></i> Recent Detection Reports
-                        </h5>
-                        <div>
-                            <button class="btn btn-sm btn-light" id="refreshBtn">
-                                <i class="fas fa-sync-alt"></i> Refresh
-                            </button>
-                            <button class="btn btn-sm btn-success ms-2" id="autoRefreshBtn" data-active="false">
-                                <i class="fas fa-play"></i> Auto Refresh
-                            </button>
+                    <div class="stat-content">
+                        <div class="stat-number" id="accuracyRateCard">
+                            {% if stats.accuracy_rate > 0 %}
+                                {{ stats.accuracy_rate }}%
+                            {% else %}
+                                N/A
+                            {% endif %}
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Report ID</th>
-                                        <th>Date & Time</th>
-                                        <th>Location</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for report in reports %}
-                                        <tr class="{% if report.results.count > 0 %}alert-criminal{% endif %}">
-                                            <td>{{ report.id|slice:":12" }}...</td>
-                                            <td>{{ report.detection_time|date:"M d, Y H:i" }}</td>
-                                            <td>{{ report.location|default:"" }}</td>
-                                            <td>
-                                                <span class="badge bg-{% if report.results.count > 0 %}danger{% else %}success{% endif %}">
-                                                    {% if report.results.count > 0 %}Criminal Detected{% else %}No Match{% endif %}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-primary view-details" data-report="{{ report.id }}" data-bs-toggle="tooltip" title="View Details">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="card dashboard-card mb-4">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-tasks"></i> Active Alerts
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="detection-result positive mb-3">
-                            <h6>High Priority Alert</h6>
-                            <p class="mb-1"><strong>Subject:</strong> John Doe</p>
-                            <p class="mb-1"><strong>Last Seen:</strong> Downtown Mall</p>
-                            <p class="mb-2"><strong>Time:</strong> 2 hours ago</p>
-                            <button class="btn btn-sm btn-danger">
-                                <i class="fas fa-bullhorn"></i> Broadcast Alert
-                            </button>
-                        </div>
-                        
-                        <div class="detection-result positive mb-3">
-                            <h6>Medium Priority Alert</h6>
-                            <p class="mb-1"><strong>Subject:</strong> Jane Smith</p>
-                            <p class="mb-1"><strong>Last Seen:</strong> Railway Station</p>
-                            <p class="mb-2"><strong>Time:</strong> 4 hours ago</p>
-                            <button class="btn btn-sm btn-warning">
-                                <i class="fas fa-bullhorn"></i> Broadcast Alert
-                            </button>
-                        </div>
-                        
-                        <div class="text-center mt-3">
-                            <button class="btn btn-outline-primary">
-                                <i class="fas fa-plus"></i> Create New Alert
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card dashboard-card">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-chart-bar"></i> Detection Statistics
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>Face Detection Accuracy</span>
-                                <span id="accuracyRate">{{ stats.accuracy_rate }}%</span>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ stats.accuracy_rate }}%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>Database Match Rate</span>
-                                <span id="matchRate">87%</span>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 87%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>False Positive Rate</span>
-                                <span id="falsePositiveRate">3%</span>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: 3%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="chart-container">
-                            <canvas id="detectionChart"></canvas>
-                        </div>
+                        <div class="stat-label">Accuracy Rate</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Report Details Modal -->
-    <div class="modal fade" id="reportDetailsModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-file-alt"></i> Detection Report Details
+    <!-- Main Content -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bell me-2"></i>Recent Detection Reports
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <span class="badge bg-secondary">{{ reports|length }} reports</span>
                 </div>
-                <div class="modal-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <p><strong>Report ID:</strong> <span id="modalReportId"></span></p>
-                            <p><strong>Date & Time:</strong> <span id="modalDateTime"></span></p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Location:</strong> <span id="modalLocation"></span></p>
-                            <p><strong>Status:</strong> 
-                                <span class="badge bg-success" id="modalStatus">No Match</span>
-                            </p>
-                        </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Report ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in reports %}
+                                    <tr>
+                                        <td>
+                                            <code class="text-muted">{{ report.id|slice:":8" }}</code>
+                                        </td>
+                                        <td>{{ report.detection_time|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            {% if report.location %}
+                                                <i class="fas fa-map-marker-alt text-muted me-1"></i>
+                                                {{ report.location|truncatechars:20 }}
+                                            {% else %}
+                                                <span class="text-muted">Not specified</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if report.results.count > 0 %}
+                                                <span class="badge badge-criminal">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>Criminal Detected
+                                                </span>
+                                            {% else %}
+                                                <span class="badge badge-no-match">
+                                                    <i class="fas fa-check-circle me-1"></i>No Match
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5 text-muted">
+                                            <i class="fas fa-inbox fa-2x mb-3"></i>
+                                            <p class="mb-0">No detection reports found</p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    
-                    <div class="detection-result positive">
-                        <h5>Detection Results</h5>
-                        <div class="row">
-                            <div class="col-md-3 text-center">
-                                <div class="bg-light rounded p-3 mb-3">
-                                    <i class="fas fa-user-shield fa-3x text-danger"></i>
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <h5>John Doe</h5>
-                                <p class="mb-2"><strong>Confidence Level:</strong> 92.5%</p>
-                                <div class="confidence-meter mb-3">
-                                    <div class="confidence-bar progress-bar bg-danger" role="progressbar" style="width: 92.5%"></div>
-                                </div>
-                                <button class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-download"></i> Download Report
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">
-                        <i class="fas fa-flag"></i> Mark as Reviewed
-                    </button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{% static 'js/custom.js' %}"></script>
-    <script>
-        // Auto-refresh functionality
-        let autoRefreshInterval;
-        let isAutoRefreshActive = false;
+<!-- Report Details Modal -->
+<div class="modal fade" id="reportDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-file-alt me-2"></i>Detection Report Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p><strong>Report ID:</strong> <span id="modalReportId"></span></p>
+                        <p><strong>Date & Time:</strong> <span id="modalDateTime"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge bg-success" id="modalStatus">No Match</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="detection-result">
+                    <h5>Detection Results</h5>
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="bg-light rounded p-3 mb-3">
+                                <i class="fas fa-user-shield fa-3x text-danger"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <h5 id="modalCriminalName">John Doe</h5>
+                            <p class="mb-2"><strong>Confidence Level:</strong> <span id="modalConfidence" class="confidence-value">0.00%</span></p>
+                            <div class="confidence-meter mb-3">
+                                <div class="progress">
+                                    <div class="confidence-bar progress-bar bg-danger" role="progressbar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div id="verificationSection" class="mt-3">
+                                <h6>Confirm Criminal Status</h6>
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-sm btn-success w-50" id="confirmCriminalBtn">
+                                        <i class="fas fa-user-check me-1"></i> Is Criminal
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-warning w-50" id="confirmNotCriminalBtn">
+                                        <i class="fas fa-user-times me-1"></i> Not Criminal
+                                    </button>
+                                </div>
+                                <div class="mt-2">
+                                    <textarea class="form-control form-control-sm" id="confirmationNotes" placeholder="Add confirmation notes (optional)"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+<script>
+    // Auto-refresh functionality
+    let autoRefreshInterval;
+    let isAutoRefreshActive = false;
+    
+    // Function to refresh dashboard data
+    function refreshDashboard() {
+        fetch(window.location.href, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update stats
+            document.getElementById('totalReports').textContent = data.stats.total_reports;
+            document.getElementById('criminalsDetected').textContent = data.stats.criminals_detected;
+            document.getElementById('pendingReview').textContent = data.stats.pending_review;
+            
+            // Update accuracy rate with proper handling for N/A
+            const accuracyRateCard = document.getElementById('accuracyRateCard');
+            const accuracyProgressBar = document.querySelector('.progress-bar.bg-success');
+            
+            if (data.stats.accuracy_rate > 0) {
+                accuracyRateCard.textContent = data.stats.accuracy_rate + '%';
+                accuracyProgressBar.style.width = data.stats.accuracy_rate + '%';
+                accuracyProgressBar.className = 'progress-bar bg-success';
+                accuracyRateCard.className = 'stat-number fw-bold text-success';
+            } else {
+                accuracyRateCard.textContent = 'N/A';
+                accuracyProgressBar.style.width = '0%';
+                accuracyProgressBar.className = 'progress-bar bg-secondary';
+                accuracyRateCard.className = 'stat-number';
+            }
+            
+            // Update reports table
+            updateReportsTable(data.reports);
+        })
+        .catch(error => {
+            console.error('Error refreshing dashboard:', error);
+        });
+    }
+    
+    // Function to update reports table
+    function updateReportsTable(reports) {
+        const tbody = document.querySelector('.table tbody');
+        tbody.innerHTML = '';
         
-        // Function to refresh dashboard data
-        function refreshDashboard() {
-            fetch(window.location.href, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+        if (reports.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center py-5 text-muted">
+                        <i class="fas fa-inbox fa-2x mb-3"></i>
+                        <p class="mb-0">No detection reports found</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        reports.forEach(report => {
+            const row = document.createElement('tr');
+            
+            // Show simplified report ID (first 8 characters)
+            const simplifiedReportId = report.id.substring(0, 8);
+            
+            // Determine if report has detections
+            const hasDetections = report.has_detections;
+            
+            row.innerHTML = `
+                <td>
+                    <code class="text-muted">${simplifiedReportId}</code>
+                </td>
+                <td>${report.detection_time}</td>
+                <td>
+                    ${report.location ? `<i class="fas fa-map-marker-alt text-muted me-1"></i>${report.location.substring(0, 20)}${report.location.length > 20 ? '...' : ''}` : '<span class="text-muted">Not specified</span>'}
+                </td>
+                <td>
+                    ${hasDetections ? 
+                        '<span class="badge badge-criminal"><i class="fas fa-exclamation-triangle me-1"></i>Criminal Detected</span>' : 
+                        '<span class="badge badge-no-match"><i class="fas fa-check-circle me-1"></i>No Match</span>'}
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        });
+    }
+    
+    // Toggle auto-refresh
+    function toggleAutoRefresh() {
+        const button = document.getElementById('autoRefreshBtn');
+        const icon = button.querySelector('i');
+        
+        if (isAutoRefreshActive) {
+            // Stop auto-refresh
+            clearInterval(autoRefreshInterval);
+            isAutoRefreshActive = false;
+            button.innerHTML = '<i class="fas fa-play me-1"></i> Auto';
+            button.classList.remove('btn-danger');
+            button.classList.add('btn-success');
+        } else {
+            // Start auto-refresh
+            autoRefreshInterval = setInterval(refreshDashboard, 5000); // Refresh every 5 seconds
+            isAutoRefreshActive = true;
+            button.innerHTML = '<i class="fas fa-stop me-1"></i> Stop';
+            button.classList.remove('btn-success');
+            button.classList.add('btn-danger');
+        }
+    }
+    
+    // Confirm criminal status
+    function confirmCriminalStatus(detectionId, isCriminal) {
+        const notes = document.getElementById('confirmationNotes').value;
+        
+        fetch(`/confirm-criminal/${detectionId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: `is_criminal=${isCriminal}&notes=${encodeURIComponent(notes)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                // Refresh the dashboard to update accuracy
+                refreshDashboard();
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('reportDetailsModal'));
+                modal.hide();
+            } else {
+                showNotification('Error confirming criminal status: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Failed to confirm criminal status. Please try again.', 'danger');
+        });
+    }
+
+    // Verify detection
+    function verifyDetection(detectionId, isCorrect) {
+        const notes = document.getElementById('verificationNotes').value;
+        
+        fetch(`/verify/${detectionId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: `is_correct=${isCorrect}&notes=${encodeURIComponent(notes)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Detection verified successfully!', 'success');
+                // Refresh the dashboard to update accuracy
+                refreshDashboard();
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('reportDetailsModal'));
+                modal.hide();
+            } else {
+                showNotification('Error verifying detection: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Failed to verify detection. Please try again.', 'danger');
+        });
+    }
+
+    // View report details for police dashboard
+    function viewReportDetails(reportId) {
+        fetch(`/report/${reportId}/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                return response.json();
             })
-            .then(response => response.json())
             .then(data => {
-                // Update stats
-                document.getElementById('totalReports').textContent = data.stats.total_reports;
-                document.getElementById('criminalsDetected').textContent = data.stats.criminals_detected;
-                document.getElementById('pendingReview').textContent = data.stats.pending_review;
-                document.getElementById('accuracyRateCard').textContent = data.stats.accuracy_rate + '%';
-                document.getElementById('accuracyRate').textContent = data.stats.accuracy_rate + '%';
+                if (!data.success) {
+                    throw new Error(data.error || 'Unknown error occurred');
+                }
                 
-                // Update progress bars
-                document.querySelector('.progress-bar.bg-success').style.width = data.stats.accuracy_rate + '%';
+                // Update modal content with report data
+                // Show simplified report ID (first 8 characters)
+                const simplifiedReportId = data.report_id.substring(0, 8);
+                document.getElementById('modalReportId').textContent = simplifiedReportId;
+                document.getElementById('modalDateTime').textContent = data.detection_time;
+                document.getElementById('modalLocation').textContent = data.location || 'Not specified';
                 
-                // Update reports table
-                updateReportsTable(data.reports);
+                // Update status badge
+                const statusBadge = document.querySelector('#reportDetailsModal .badge');
+                if (statusBadge) {
+                    statusBadge.className = `badge ${data.detections.length > 0 ? 'bg-danger' : 'bg-success'}`;
+                    statusBadge.textContent = data.detections.length > 0 ? 'Criminal Detected' : 'No Match';
+                }
+                
+                // Update detection results
+                if (data.detections.length > 0) {
+                    const detection = data.detections[0]; // For simplicity, show first detection
+                    
+                    // Clamp confidence value between 0 and 100
+                    let confidence = parseFloat(detection.confidence);
+                    confidence = Math.max(0, Math.min(100, confidence));
+                    
+                    document.getElementById('modalCriminalName').textContent = detection.criminal_name;
+                    document.getElementById('modalConfidence').textContent = confidence.toFixed(2) + '%';
+                    document.querySelector('.confidence-bar').style.width = confidence + '%';
+                    
+                    // Store detection ID for verification
+                    document.getElementById('confirmCriminalBtn').setAttribute('data-detection-id', detection.id);
+                    document.getElementById('confirmNotCriminalBtn').setAttribute('data-detection-id', detection.id);
+                    
+                    // Set up confirmation button listeners
+                    const confirmCriminalBtn = document.getElementById('confirmCriminalBtn');
+                    const confirmNotCriminalBtn = document.getElementById('confirmNotCriminalBtn');
+                    
+                    // Remove any existing event listeners to prevent duplicates
+                    const newConfirmCriminalBtn = confirmCriminalBtn.cloneNode(true);
+                    const newConfirmNotCriminalBtn = confirmNotCriminalBtn.cloneNode(true);
+                    confirmCriminalBtn.parentNode.replaceChild(newConfirmCriminalBtn, confirmCriminalBtn);
+                    confirmNotCriminalBtn.parentNode.replaceChild(newConfirmNotCriminalBtn, confirmNotCriminalBtn);
+                    
+                    // Add event listeners
+                    newConfirmCriminalBtn.addEventListener('click', function() {
+                        confirmCriminalStatus(detection.id, 'true');
+                    });
+                    
+                    newConfirmNotCriminalBtn.addEventListener('click', function() {
+                        confirmCriminalStatus(detection.id, 'false');
+                    });
+                    
+                    // Show verification section
+                    document.getElementById('verificationSection').style.display = 'block';
+                } else {
+                    // Hide verification section if no detections
+                    document.getElementById('verificationSection').style.display = 'none';
+                }
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('reportDetailsModal'));
+                modal.show();
             })
             .catch(error => {
-                console.error('Error refreshing dashboard:', error);
+                console.error('Error fetching report details:', error);
+                showNotification('Failed to load report details: ' + error.message, 'danger');
             });
-        }
+    }
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set up event listeners
+        document.getElementById('refreshBtn').addEventListener('click', refreshDashboard);
+        document.getElementById('autoRefreshBtn').addEventListener('click', toggleAutoRefresh);
         
-        // Function to update reports table
-        function updateReportsTable(reports) {
-            const tbody = document.querySelector('.table tbody');
-            tbody.innerHTML = '';
-            
-            reports.forEach(report => {
-                const row = document.createElement('tr');
-                row.className = report.has_detections ? 'alert-criminal' : '';
-                
-                row.innerHTML = `
-                    <td>${report.id.substring(0, 12)}...</td>
-                    <td>${report.detection_time}</td>
-                    <td>${report.location}</td>
-                    <td>
-                        <span class="badge bg-${report.has_detections ? 'danger' : 'success'}">
-                            ${report.status}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-primary view-details" data-report="${report.id}" data-bs-toggle="tooltip" title="View Details">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-            
-            // Re-initialize tooltips
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
-        }
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
         
-        // Toggle auto-refresh
-        function toggleAutoRefresh() {
-            const button = document.getElementById('autoRefreshBtn');
-            const icon = button.querySelector('i');
+        // Add event listeners for verification buttons
+        addVerificationListeners();
+    });
+
+    // Add event listeners for verification buttons
+    function addVerificationListeners() {
+        // Remove any existing event listeners to prevent duplicates
+        const verifyButtons = document.querySelectorAll('.verify-btn');
+        verifyButtons.forEach(button => {
+            // Clone the button to remove existing event listeners
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
             
-            if (isAutoRefreshActive) {
-                // Stop auto-refresh
-                clearInterval(autoRefreshInterval);
-                isAutoRefreshActive = false;
-                button.innerHTML = '<i class="fas fa-play"></i> Auto Refresh';
-                button.classList.remove('btn-danger');
-                button.classList.add('btn-success');
-            } else {
-                // Start auto-refresh
-                autoRefreshInterval = setInterval(refreshDashboard, 5000); // Refresh every 5 seconds
-                isAutoRefreshActive = true;
-                button.innerHTML = '<i class="fas fa-stop"></i> Stop Refresh';
-                button.classList.remove('btn-success');
-                button.classList.add('btn-danger');
-            }
-        }
-        
-        // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set up event listeners
-            document.getElementById('refreshBtn').addEventListener('click', refreshDashboard);
-            document.getElementById('autoRefreshBtn').addEventListener('click', toggleAutoRefresh);
-            
-            // Initialize tooltips
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
-            
-            // Initialize chart
-            const ctx = document.getElementById('detectionChart').getContext('2d');
-            const detectionChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Detections',
-                        data: [12, 19, 3, 5, 2, 3],
-                        borderColor: '#3498db',
-                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }, {
-                        label: 'False Positives',
-                        data: [1, 2, 1, 0, 1, 0],
-                        borderColor: '#e74c3c',
-                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
+            // Add new event listener
+            newButton.addEventListener('click', function() {
+                const reportId = this.getAttribute('data-report');
+                const resultId = this.getAttribute('data-result');
+                const isCorrect = this.getAttribute('data-verification') === 'true';
+                quickVerify(resultId, isCorrect);
             });
         });
-    </script>
+    }
+
+    // Quick verification function
+    function quickVerify(detectionId, isCorrect) {
+        fetch(`/verify/${detectionId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: `is_correct=${isCorrect}&notes=Quick verification from dashboard`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Detection verified successfully!', 'success');
+                // Refresh the dashboard to update accuracy
+                refreshDashboard();
+            } else {
+                showNotification('Error verifying detection: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Failed to verify detection. Please try again.', 'danger');
+        });
+    }
+
+    // Show notification
+    function showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
+        notification.style.zIndex = '9999';
+        notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        notification.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+                ${message}
+            </div>
+        `;
+        
+        // Add to body
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 {% endblock %}
