@@ -34,4 +34,7 @@ python manage.py migrate || echo "Migration failed, trying with --fake-initial"
 python manage.py migrate --fake-initial || echo "Migration still failed"
 
 # Create superuser if it doesn't exist
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', 'admin@example.com', 'admin') if not User.objects.filter(username='admin').exists() else print('Admin user already exists')" | python manage.py shell || echo "Superuser creation failed or already exists"
+
+# Initialize data
 python manage.py init_data || echo "Init data script failed"
